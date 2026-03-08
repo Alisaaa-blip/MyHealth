@@ -2,7 +2,7 @@ Index · HTML
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Health Tracker</title>
+  <title>My Health</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon-512.png">
@@ -124,7 +124,7 @@ Index · HTML
       var sleep = document.getElementById("sleep").value;
 
       if (steps == "" || water == "" || sleep == "") {
-        document.getElementById("output").innerHTML = "⚠️ Please fill all fields!";
+        document.getElementById("output").innerHTML = "Please fill all fields!";
         return;
       }
 
@@ -169,10 +169,10 @@ Index · HTML
           var item = history[i];
           historyList.innerHTML +=
             '<div class="history-item">' +
-            '📅 ' + item.date + '<br>' +
-            '👟 Steps: ' + item.steps + '<br>' +
-            '💧 Water: ' + item.water + ' glasses<br>' +
-            '😴 Sleep: ' + item.sleep + ' hours' +
+            'DATE+' item.date + '<br>' +
+            'STEPS : ' + item.steps + '<br>' +
+            'WATER: ' + item.water + ' glasses<br>' +
+            'SLEEP ' + item.sleep + ' hours' +
             '</div>';
         }
       }
@@ -191,4 +191,5 @@ Index · HTML
   </script>
 
 </body>
+
 </html>
