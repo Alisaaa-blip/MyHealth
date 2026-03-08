@@ -1,85 +1,194 @@
+Index · HTML
 <!DOCTYPE html>
 <html>
 <head>
-<title>My Health Tracker</title>
+  <title>My Health Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon-512.png">
+  <meta name="theme-color" content="#3a3ab0">
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #fff5a0, #ffb6d9);
+      text-align: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
 
-<style>
-body{
-    font-family: Arial;
-    background:#f2f2f2;
-    text-align:center;
-}
+    .container {
+      background: rgba(255, 255, 255, 0.6);
+      width: 300px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+    }
 
-.container{
-    background:white;
-    width:300px;
-    margin:auto;
-    padding:20px;
-    border-radius:10px;
-}
+    img.logo {
+      width: 80px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
 
-input{
-    width:90%;
-    padding:8px;
-    margin:5px;
-}
+    h2 {
+      color: #3a3ab0;
+      font-weight: bold;
+    }
 
-button{
-    padding:10px;
-    background:green;
-    color:white;
-    border:none;
-    border-radius:5px;
-}
+    p {
+      color: #3a3ab0;
+      font-weight: bold;
+      margin: 10px 0 3px 0;
+    }
 
-.result{
-    margin-top:15px;
-}
-</style>
+    input {
+      width: 90%;
+      padding: 8px;
+      margin: 5px;
+      border: 2px solid #3a3ab0;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #3a3ab0;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .result {
+      margin-top: 15px;
+      background: rgba(255,255,255,0.7);
+      padding: 10px;
+      border-radius: 8px;
+      color: #3a3ab0;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .history-title {
+      color: #3a3ab0;
+      font-weight: bold;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .history-item {
+      background: rgba(255,255,255,0.7);
+      margin: 6px 0;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #333;
+      text-align: left;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
+  <div class="container">
+    <img src="icon-512.png" class="logo" alt="My Health">
+    <h2>My Health Tracker</h2>
 
-<h2>Health Tracker</h2>
+    <p>Steps Walked</p>
+    <input type="number" id="steps" placeholder="e.g. 5000">
 
-<p>Steps Walked</p>
-<input type="number" id="steps">
+    <p>Water Intake (glasses)</p>
+    <input type="number" id="water" placeholder="e.g. 8">
 
-<p>Water Intake (glasses)</p>
-<input type="number" id="water">
+    <p>Sleep Hours</p>
+    <input type="number" id="sleep" placeholder="e.g. 7">
 
-<p>Sleep Hours</p>
-<input type="number" id="sleep">
+    <br>
+    <button onclick="trackHealth()">Save Health Data</button>
 
-<br>
+    <div class="result" id="output"></div>
 
-<button onclick="trackHealth()">Save Health Data</button>
+    <div class="history-title" id="historyTitle"></div>
+    <div id="historyList"></div>
+  </div>
 
-<div class="result" id="output"></div>
+  <script>
+    // load saved data when page opens
+    window.onload = function() {
+      loadHistory();
+    }
 
-</div>
+    function trackHealth() {
+      var steps = document.getElementById("steps").value;
+      var water = document.getElementById("water").value;
+      var sleep = document.getElementById("sleep").value;
 
-<script>
+      if (steps == "" || water == "" || sleep == "") {
+        document.getElementById("output").innerHTML = "⚠️ Please fill all fields!";
+        return;
+      }
 
-function trackHealth(){
+      var message = "Today's Health Record <br>" +
+        "Steps: " + steps + "<br>" +
+        "Water: " + water + " glasses<br>" +
+        "Sleep: " + sleep + " hours";
 
-let steps = document.getElementById("steps").value;
-let water = document.getElementById("water").value;
-let sleep = document.getElementById("sleep").value;
+      document.getElementById("output").innerHTML = message;
 
-let message =
-"Today's Health Record <br>" +
-"Steps: " + steps + "<br>" +
-"Water: " + water + " glasses<br>" +
-"Sleep: " + sleep + " hours";
+      // save to localStorage
+      var record = {
+        date: new Date().toLocaleDateString(),
+        steps: steps,
+        water: water,
+        sleep: sleep
+      };
 
-document.getElementById("output").innerHTML = message;
+      var history = JSON.parse(localStorage.getItem("healthHistory") || "[]");
+      history.push(record);
+      localStorage.setItem("healthHistory", JSON.stringify(history));
 
-}
+      // clear inputs
+      document.getElementById("steps").value = "";
+      document.getElementById("water").value = "";
+      document.getElementById("sleep").value = "";
 
-</script>
+      loadHistory();
+    }
+
+    // read and show saved records
+    function loadHistory() {
+      var history = JSON.parse(localStorage.getItem("healthHistory") || "[]");
+      var historyList = document.getElementById("historyList");
+      var historyTitle = document.getElementById("historyTitle");
+
+      historyList.innerHTML = "";
+
+      if (history.length > 0) {
+        historyTitle.innerHTML = "📋 Saved Records";
+        for (var i = history.length - 1; i >= 0; i--) {
+          var item = history[i];
+          historyList.innerHTML +=
+            '<div class="history-item">' +
+            '📅 ' + item.date + '<br>' +
+            '👟 Steps: ' + item.steps + '<br>' +
+            '💧 Water: ' + item.water + ' glasses<br>' +
+            '😴 Sleep: ' + item.sleep + ' hours' +
+            '</div>';
+        }
+      }
+    }
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/service-worker.js")
+        .then(function() {
+          console.log("ayos! rehistro as service worker");
+        })
+        .catch(function(error) {
+          console.log("Registration failed: ", error);
+        });
+    }
+  </script>
 
 </body>
 </html>
